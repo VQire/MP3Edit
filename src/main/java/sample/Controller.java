@@ -42,7 +42,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gridPane.setPadding(new Insets(10,10,10,10));
-        gridPane.setGridLinesVisible(true);
+        //gridPane.setGridLinesVisible(true);
         gridPane.setVgap(10);
         gridPane.setHgap(20);
         String[] tmp_labels = {"Tytul","Artysta","Album","Rok_wydania","Numer_utworu","Gatunek"};
