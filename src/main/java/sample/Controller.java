@@ -241,7 +241,20 @@ public class Controller implements Initializable {
                     id3v1Tags.setGenre(Integer.parseInt(textFieldGenre.getText().split(" ")[0]));
                     //saves the file
                     String parentOfFile = chosenFile.getParent();
-                    mp3File.save(parentOfFile+"\\"+id3v1Tags.getArtist()+" "+id3v1Tags.getTitle()+".mp3");
+                    File tmp = new File(parentOfFile+"\\"+id3v1Tags.getArtist()+" "+id3v1Tags.getTitle()+".mp3");
+                    if(tmp.exists()){
+                        int indexOfFile = 0;
+                        for (int i = 1;;i++){
+                            tmp = new File(parentOfFile+"\\"+id3v1Tags.getArtist()+" "+id3v1Tags.getTitle()+" ("+String.valueOf(i)+")"+".mp3");
+                            if(!tmp.exists()){
+                                mp3File.save(parentOfFile+"\\"+id3v1Tags.getArtist()+" "+id3v1Tags.getTitle()+" ("+String.valueOf(i)+")"+".mp3");
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        mp3File.save(parentOfFile + "\\" + id3v1Tags.getArtist() + " " + id3v1Tags.getTitle() + ".mp3");
+                    }
                 }
                 //checks if mp3 file uses ID3v2 Tags
                 else if(mp3File.hasId3v2Tag())
@@ -284,7 +297,20 @@ public class Controller implements Initializable {
                     //sets created tags to mp3 file
                     mp3File.setId3v2Tag(id3v2Tags);
                     String parentOfFile = chosenFile.getParent();
-                    mp3File.save(parentOfFile+"\\"+id3v2Tags.getArtist()+" "+id3v2Tags.getTitle()+".mp3");
+                    File tmp = new File(parentOfFile+"\\"+id3v2Tags.getArtist()+" "+id3v2Tags.getTitle()+".mp3");
+                    if(tmp.exists()){
+                        int indexOfFile = 0;
+                        for (int i = 1;;i++){
+                            tmp = new File(parentOfFile+"\\"+id3v2Tags.getArtist()+" "+id3v2Tags.getTitle()+" ("+String.valueOf(i)+")"+".mp3");
+                            if(!tmp.exists()){
+                                mp3File.save(parentOfFile+"\\"+id3v2Tags.getArtist()+" "+id3v2Tags.getTitle()+" ("+String.valueOf(i)+")"+".mp3");
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        mp3File.save(parentOfFile + "\\" + id3v2Tags.getArtist() + " " + id3v2Tags.getTitle() + ".mp3");
+                    }
                 }
                 else
                 {
