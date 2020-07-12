@@ -26,8 +26,6 @@ public class Controller implements Initializable {
 
     @FXML
     public GridPane gridPane;
-    @FXML
-    public javafx.scene.control.Button chooseFileButton;
 
     public static File chosenFile;
     private int numberOfLabels;
@@ -87,15 +85,13 @@ public class Controller implements Initializable {
         });
         gridPane.add(confirmChanges,1,counter+1);
 
-//        Image image = new Image("nope.png");
-//        ImageView imageView = new ImageView();
-//        imageView.setImage(image);
-//        imageView.setId("albumCover");
-//        imageView.setFitHeight(210);
-//        imageView.setFitWidth(210);
-//        gridPane.add(imageView,2,0,1,7);
-
-
+        Image image = new Image("nope.png");
+        ImageView imageView = new ImageView();
+        imageView.setImage(image);
+        imageView.setId("albumCover");
+        imageView.setFitHeight(210);
+        imageView.setFitWidth(210);
+        gridPane.add(imageView,2,0,1,7);
     }
 
     private void unlockTextFields(){
@@ -132,7 +128,6 @@ public class Controller implements Initializable {
                     TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
                     System.out.println(id3v1Tags.getGenre());
                     textFieldGenre.setText(String.valueOf(id3v1Tags.getGenre())+ " " + id3v1Tags.getGenreDescription() +")");
-
                 }
                 else if(mp3File.hasId3v2Tag())
                 {
@@ -156,10 +151,13 @@ public class Controller implements Initializable {
                     TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
                     System.out.println(id3v2Tags.getGenre());
                     textFieldGenre.setText(String.valueOf(id3v2Tags.getGenre())+ " " + id3v2Tags.getGenreDescription());
-                    //byte[] cover = id3v2Tags.getAlbumImage();
-                    //Image coverImage = new Image(new ByteArrayInputStream(cover));
-                    //ImageView coverDisplay = (ImageView) gridPane.lookup("#albumCover");
-                    //coverDisplay.setVisible(false);
+                    byte[] cover = id3v2Tags.getAlbumImage();
+                    if(cover != null){
+                        System.out.println(id3v2Tags.getAlbumImageMimeType());
+                        Image coverImage = new Image(new ByteArrayInputStream(cover));
+                        ImageView tmp = (ImageView) gridPane.lookup("#albumCover");
+                        tmp.setImage(coverImage);
+                    }
                 }
                 else
                 {
