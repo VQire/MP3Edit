@@ -193,18 +193,10 @@ public class Controller implements Initializable {
     }
 
     private void cleanup(){
-        TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
-        textFieldTitle.setText("");
-        TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
-        textFieldArtist.setText("");
-        TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
-        textFieldAlbum.setText("");
-        TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
-        textFieldYear.setText("");
-        TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
-        textFieldNumber.setText("");
-        TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
-        textFieldGenre.setText("");
+        Map<String,TextField> textFieldMap = getTextFields();
+        for (TextField textField : textFieldMap.values()){
+            textField.setText("");
+        }
         chosenFile = null;
         coverImage = null;
         prevImageMimeType = null;
@@ -212,7 +204,12 @@ public class Controller implements Initializable {
         Image image = new Image("nope.png");
         ImageView imageView = (ImageView) gridPane.lookup("#albumCover");
         imageView.setImage(image);
+        imageView.setDisable(true);
         lockOnTextFields(true);
+        Label infoLabel = (Label) gridPane.lookup("#infoLabel");
+        infoLabel.setText("Wybierz plik");
+        TextField textFieldFileName = (TextField) gridPane.lookup("#textfieldNazwa_pliku");
+        textFieldFileName.setText("");
     }
 
     private void getID3v1Tags(Mp3File mp3File){
@@ -220,24 +217,19 @@ public class Controller implements Initializable {
 
         //gets existing tags ID3v1
         ID3v1 id3v1Tags = mp3File.getId3v1Tag();
+        Map<String,TextField> textFieldMap = getTextFields();
         //displays Title
-        TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
-        textFieldTitle.setText(id3v1Tags.getTitle());
+        textFieldMap.get(labels[0]).setText(id3v1Tags.getTitle());
         //displays Artist name
-        TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
-        textFieldArtist.setText(id3v1Tags.getArtist());
+        textFieldMap.get(labels[1]).setText(id3v1Tags.getArtist());
         //displays Album name
-        TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
-        textFieldAlbum.setText(id3v1Tags.getAlbum());
+        textFieldMap.get(labels[2]).setText(id3v1Tags.getAlbum());
         //displays Year of publication
-        TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
-        textFieldYear.setText(id3v1Tags.getYear());
+        textFieldMap.get(labels[3]).setText(id3v1Tags.getYear());
         //displays Number/index of track
-        TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
-        textFieldNumber.setText(id3v1Tags.getTrack());
+        textFieldMap.get(labels[4]).setText(id3v1Tags.getTrack());
         //displays genre
-        TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
-        textFieldGenre.setText(String.valueOf(id3v1Tags.getGenre())+ " " + id3v1Tags.getGenreDescription() +")");
+        textFieldMap.get(labels[5]).setText(String.valueOf(id3v1Tags.getGenre())+ " " + id3v1Tags.getGenreDescription() +")");
     }
 
     private void getID3v2Tags(Mp3File mp3File){
@@ -245,24 +237,19 @@ public class Controller implements Initializable {
 
         //gets existing tags ID3v2
         ID3v2 id3v2Tags = mp3File.getId3v2Tag();
+        Map<String,TextField> textFieldMap = getTextFields();
         //displays Title
-        TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
-        textFieldTitle.setText(id3v2Tags.getTitle());
+        textFieldMap.get(labels[0]).setText(id3v2Tags.getTitle());
         //displays Artist name
-        TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
-        textFieldArtist.setText(id3v2Tags.getArtist());
+        textFieldMap.get(labels[1]).setText(id3v2Tags.getArtist());
         //displays Album name
-        TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
-        textFieldAlbum.setText(id3v2Tags.getAlbum());
+        textFieldMap.get(labels[2]).setText(id3v2Tags.getAlbum());
         //displays Year of publication
-        TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
-        textFieldYear.setText(id3v2Tags.getYear());
+        textFieldMap.get(labels[3]).setText(id3v2Tags.getYear());
         //displays Number/index of track
-        TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
-        textFieldNumber.setText(id3v2Tags.getTrack());
+        textFieldMap.get(labels[4]).setText(id3v2Tags.getTrack());
         //displays genre
-        TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
-        textFieldGenre.setText(String.valueOf(id3v2Tags.getGenre())+ " " + id3v2Tags.getGenreDescription());
+        textFieldMap.get(labels[5]).setText(String.valueOf(id3v2Tags.getGenre())+ " " + id3v2Tags.getGenreDescription());
         //gets Album cover, if cover exists - displays it and saves for possible reuse
 
         byte[] cover = id3v2Tags.getAlbumImage();
@@ -281,27 +268,31 @@ public class Controller implements Initializable {
     private void setID3v2Tags(Mp3File mp3File) throws IOException, NotSupportedException {
         TextField textFieldFileName = (TextField) gridPane.lookup("#textfieldNazwa_pliku");
         String fileName = textFieldFileName.getText();
-        if(!fileName.isEmpty()) {
+        Map<String,TextField> textFieldMap = getTextFields();
+        boolean isFilled = false;
+        for (TextField textField : textFieldMap.values()){
+            String content = textField.getText()+"null";
+            if(!content.equals("null")){
+                isFilled = true;
+                break;
+            }
+        }
+
+        if(!fileName.isEmpty() && isFilled) {
             //creates tags for mp3 file
             ID3v2 id3v2Tags = new ID3v23Tag();
             //sets Title
-            TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
-            id3v2Tags.setTitle(textFieldTitle.getText());
+            id3v2Tags.setTitle(textFieldMap.get(labels[0]).getText());
             //sets Artist name
-            TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
-            id3v2Tags.setArtist(textFieldArtist.getText());
+            id3v2Tags.setArtist(textFieldMap.get(labels[1]).getText());
             //sets Album name
-            TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
-            id3v2Tags.setAlbum(textFieldAlbum.getText());
+            id3v2Tags.setAlbum(textFieldMap.get(labels[2]).getText());
             //sets Year of publication
-            TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
-            id3v2Tags.setYear(textFieldYear.getText());
+            id3v2Tags.setYear(textFieldMap.get(labels[3]).getText());
             //sets Index of track
-            TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
-            id3v2Tags.setTrack(textFieldNumber.getText());
+            id3v2Tags.setTrack(textFieldMap.get(labels[4]).getText());
             //sets Genre
-            TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
-            id3v2Tags.setGenre(Integer.parseInt(textFieldGenre.getText().split(" ")[0]));
+            id3v2Tags.setGenre(Integer.parseInt(textFieldMap.get(labels[5]).getText().split(" ")[0]));
             //checks if image for cover was chosen
 
 
@@ -338,32 +329,33 @@ public class Controller implements Initializable {
             cleanup();
         }
         else{
-            Label info = (Label)gridPane.lookup("#infoLabel");
-            info.setText("ustaw nazwę pliku wynikowego");
+            Label info = (Label) gridPane.lookup("#infoLabel");
+            if(isFilled) {
+                info.setText("ustaw nazwę pliku wynikowego");
+            }
+            else{
+                info.setText("ustaw nazwę pliku i min 1 tag");
+            }
         }
     }
 
     private void setID3v1Tags(Mp3File mp3File) throws IOException, NotSupportedException {
         //gets Tags from file
         ID3v1 id3v1Tags = mp3File.getId3v1Tag();
+        Map<String,TextField> textFieldMap = getTextFields();
+
         //sets Title
-        TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
-        id3v1Tags.setTitle(textFieldTitle.getText());
+        id3v1Tags.setTitle(textFieldMap.get(labels[0]).getText());
         //sets Artist name
-        TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
-        id3v1Tags.setArtist(textFieldArtist.getText());
+        id3v1Tags.setArtist(textFieldMap.get(labels[1]).getText());
         //sets Album name
-        TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
-        id3v1Tags.setAlbum(textFieldAlbum.getText());
+        id3v1Tags.setAlbum(textFieldMap.get(labels[2]).getText());
         //sets Year of publication
-        TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
-        id3v1Tags.setYear(textFieldYear.getText());
+        id3v1Tags.setYear(textFieldMap.get(labels[3]).getText());
         //sets Index of track
-        TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
-        id3v1Tags.setTrack(textFieldNumber.getText());
+        id3v1Tags.setTrack(textFieldMap.get(labels[4]).getText());
         //sets Genre
-        TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
-        id3v1Tags.setGenre(Integer.parseInt(textFieldGenre.getText().split(" ")[0]));
+        id3v1Tags.setGenre(Integer.parseInt(textFieldMap.get(labels[5]).getText().split(" ")[0]));
         //saves the file
         String parentOfFile = chosenFile.getParent();
         File tmp = new File(parentOfFile+"\\"+id3v1Tags.getArtist()+" "+id3v1Tags.getTitle()+".mp3");
@@ -382,4 +374,22 @@ public class Controller implements Initializable {
         }
         cleanup();
     }
+
+    private Map<String,TextField> getTextFields(){
+        Map<String,TextField> map = new HashMap<String,TextField>();
+        TextField textFieldTitle = (TextField) gridPane.lookup("#textfieldTytul");
+        TextField textFieldArtist = (TextField) gridPane.lookup("#textfieldArtysta");
+        TextField textFieldAlbum = (TextField) gridPane.lookup("#textfieldAlbum");
+        TextField textFieldYear = (TextField) gridPane.lookup("#textfieldRok_wydania");
+        TextField textFieldNumber = (TextField) gridPane.lookup("#textfieldNumer_utworu");
+        TextField textFieldGenre = (TextField) gridPane.lookup("#textfieldGatunek");
+        map.put(labels[0],textFieldTitle);
+        map.put(labels[1],textFieldArtist);
+        map.put(labels[2],textFieldAlbum);
+        map.put(labels[3],textFieldYear);
+        map.put(labels[4],textFieldNumber);
+        map.put(labels[5],textFieldGenre);
+        return map;
+    }
+
 }
